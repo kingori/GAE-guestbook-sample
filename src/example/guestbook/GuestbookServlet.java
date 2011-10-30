@@ -43,7 +43,7 @@ public class GuestbookServlet extends HttpServlet {
 			} else if (reqPath.equals("/delete")) {
 				processDelete(req, resp);
 				resp.sendRedirect(servletPath + "/list");
-			} else {
+			} else if( reqPath.equals("/") || reqPath.equals("")){
 				resp.sendRedirect(servletPath + "/list");
 			}
 		} catch (Throwable e) {
