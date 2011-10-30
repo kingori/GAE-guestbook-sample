@@ -36,11 +36,20 @@ public class GuestbookServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		String reqPath = getRequestPath(req);
-
-		if (reqPath.equals("/list")) {
-			processList(req, resp);
-		} else {
-			resp.sendRedirect(req.getServletPath() + "/list");
+		String servletPath = req.getServletPath();
+		try {
+			if (reqPath.equals("/list")) {
+				processList(req, resp);
+			} else if (reqPath.equals("/delete")) {
+				processDelete(req, resp);
+				resp.sendRedirect(servletPath + "/list");
+			} else {
+				resp.sendRedirect(servletPath + "/list");
+			}
+		} catch (Throwable e) {
+			LOG.log(Level.WARNING, "exception in doGet:", e);
+			req.setAttribute("exception", e);
+			resp.sendRedirect("/error.jsp");
 		}
 	}
 
@@ -77,22 +86,29 @@ public class GuestbookServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		String reqPath = getRequestPath(req);
+		String servletPath = req.getServletPath();
 
 		try {
 			if (reqPath.equals("/save")) {
 				processSave(req, resp);
-				resp.sendRedirect(req.getServletPath() + "/list");
+				resp.sendRedirect(servletPath + "/list");
 			} else if (reqPath.equals("/send_mail")) {
 				processSendMail(req, resp);
-				resp.sendRedirect(req.getServletPath() + "/list");
+				resp.sendRedirect(servletPath + "/list");
 			} else {
-				resp.sendRedirect(req.getServletPath() + "/list");
+				resp.sendRedirect(servletPath + "/list");
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			LOG.log(Level.WARNING, "exception in doPost:", e);
 			req.setAttribute("exception", e);
 			resp.sendRedirect("/error.jsp");
 		}
+	}
+
+	private void processDelete(HttpServletRequest req, HttpServletResponse resp)
+			throws Exception {
+		String id = req.getParameter("id");
+		service.deleteEntry(Long.parseLong(id));
 	}
 
 	private void processSendMail(HttpServletRequest req,
@@ -109,14 +125,14 @@ public class GuestbookServlet extends HttpServlet {
 				"Example.com Admin"));
 		msg.addRecipient(Message.RecipientType.TO, new InternetAddress(
 				emailAddress, "Mr. User"));
-		msg.setSubject("방문해 주셔서 고맙습니다!","utf-8");
+		msg.setSubject("방문해 주셔서 고맙습니다!", "utf-8");
 		msg.setText(content);
 		Transport.send(msg);
 
 	}
 
 	private void processSave(HttpServletRequest req, HttpServletResponse resp)
-			throws IOException {
+			throws Exception {
 		String name = req.getParameter("name");
 		String comment = req.getParameter("comment");
 		String email = req.getParameter("email");
@@ -127,8 +143,6 @@ public class GuestbookServlet extends HttpServlet {
 		entry.setEmail(email);
 
 		service.addEntry(entry);
-		resp.sendRedirect(req.getServletPath() + "/list");
-
 	}
 
 }

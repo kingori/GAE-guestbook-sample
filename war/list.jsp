@@ -1,6 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="example.guestbook.GuestbookEntry" %>
 <%@ page import="java.util.List" %>
+<%
+response.setHeader("Pragma","No-cache"); //HTTP 1.0
+response.setDateHeader ("Expires", 0);
+response.setHeader ("Cache-Control", "no-cache");
+%>
 
 <html>
 <head>
@@ -30,7 +35,7 @@ document.forms['send_mail'].submit();
  for( GuestbookEntry entry: list ) { %>
  <div name="entry">
  <ul><li>Id:<%= entry.getId() %></li>
- <li>Name:<%= entry.getName() %></li>
+ <li>Name:<%= entry.getName() %> <a href="delete?id=<%= entry.getId() %>">delete</a></li>
  <li>Comment:<%= entry.getComment() %></li>
  <li>Email:<a href="#" onclick="sendEmail( '<%= entry.getEmail() %>');"><%= entry.getEmail() %></a></li>
  <li>Date:<%= entry.getDate() %></li>

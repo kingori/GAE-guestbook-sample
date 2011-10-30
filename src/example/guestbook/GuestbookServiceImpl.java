@@ -17,27 +17,28 @@ public class GuestbookServiceImpl implements GuestbookService {
 			.getLogger(GuestbookServiceImpl.class.getName());
 
 	@Override
-	public boolean addEntry(GuestbookEntry entry) {
+	public boolean addEntry(GuestbookEntry entry) throws Exception {
 		PersistenceManager pm = getPersistenceManager();
 		try {
 			pm.makePersistent(entry);
 			LOG.log(Level.INFO, "entry added.");
 			return true;
 		} catch (Exception e) {
-			return false;
+			throw e;
 		} finally {
 			pm.close();
 		}
 	}
 
 	@Override
-	public boolean deleteEntry(GuestbookEntry entry) {
+	public boolean deleteEntry(long id) throws Exception {
 		PersistenceManager pm = getPersistenceManager();
 		try {
+			GuestbookEntry entry = pm.getObjectById(GuestbookEntry.class, id); 
 			pm.deletePersistent(entry);
 			return true;
 		} catch (Exception e) {
-			return false;
+			throw e;
 		} finally {
 			pm.close();
 		}

@@ -10,22 +10,22 @@ import javax.jdo.annotations.PrimaryKey;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class GuestbookEntry {
-	
-    @PrimaryKey
-    @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
-    private Long id;
-    
-    @Persistent
-    private String name;
-    
-    @Persistent
-    private String comment;
-    
-    @Persistent
-    private Date date = new Date();
-    
-    @Persistent
-    private String email;
+
+	@PrimaryKey
+	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	private Long id;
+
+	@Persistent
+	private String name;
+
+	@Persistent
+	private String comment;
+
+	@Persistent
+	private Date date = new Date();
+
+	@Persistent
+	private String email;
 
 	public Long getId() {
 		return id;
@@ -66,7 +66,10 @@ public class GuestbookEntry {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-    
-    
 
+	@Override
+	public String toString() {
+		return "GuestbookEntry [id=" + id + ", name=" + name + ", comment="
+				+ comment + ", date=" + date + ", email=" + email + "]";
+	}
 }
