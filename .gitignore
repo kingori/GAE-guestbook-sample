@@ -1,3 +1,3 @@
-war/WEB-INF/classes
-war/WEB-INF/appengine-generated
+*.class
+war/WEB-INF/appengine-generated/*
 
