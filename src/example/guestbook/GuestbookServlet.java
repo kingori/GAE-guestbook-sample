@@ -33,7 +33,8 @@ public class GuestbookServlet extends HttpServlet {
 	private static final Logger LOG = Logger
 			.getLogger(GuestbookServiceImpl.class.getName());
 
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
+	@Override
+	public void service(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		String reqPath = getRequestPath(req);
 		String servletPath = req.getServletPath();
@@ -42,15 +43,26 @@ public class GuestbookServlet extends HttpServlet {
 				processList(req, resp);
 			} else if (reqPath.equals("/delete")) {
 				processDelete(req, resp);
-				resp.sendRedirect(servletPath + "/list");
-			} else if( reqPath.equals("/") || reqPath.equals("")){
-				resp.sendRedirect(servletPath + "/list");
+				redirectToList(servletPath, resp);
+			} else if (reqPath.equals("/save")) {
+				processSave(req, resp);
+				redirectToList(servletPath, resp);
+			} else if (reqPath.equals("/send_mail")) {
+				processSendMail(req, resp);
+				redirectToList(servletPath, resp);
+			} else if (reqPath.equals("/") || reqPath.equals("")) {
+				redirectToList(servletPath, resp);
 			}
 		} catch (Throwable e) {
-			LOG.log(Level.WARNING, "exception in doGet:", e);
+			LOG.log(Level.WARNING, "exception in service:", e);
 			req.setAttribute("exception", e);
 			resp.sendRedirect("/error.jsp");
 		}
+	}
+
+	private void redirectToList(String servletPath, HttpServletResponse resp)
+			throws IOException {
+		resp.sendRedirect(servletPath + "/list");
 	}
 
 	private String getRequestPath(HttpServletRequest req) {
@@ -65,44 +77,13 @@ public class GuestbookServlet extends HttpServlet {
 	}
 
 	private void processList(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		try {
-			List<GuestbookEntry> entries = service.listEntry();
-			LOG.log(Level.INFO, "entries:" + entries);
-			req.setAttribute("list", entries);
-			RequestDispatcher dispatcher = getServletContext()
-					.getRequestDispatcher("/list.jsp");
-			dispatcher.forward(req, resp);
-		} catch (Exception e) {
-			e.printStackTrace();
-			RequestDispatcher dispatcher = getServletContext()
-					.getRequestDispatcher("/error.jsp");
-			dispatcher.forward(req, resp);
-		}
-	}
-
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-
-		String reqPath = getRequestPath(req);
-		String servletPath = req.getServletPath();
-
-		try {
-			if (reqPath.equals("/save")) {
-				processSave(req, resp);
-				resp.sendRedirect(servletPath + "/list");
-			} else if (reqPath.equals("/send_mail")) {
-				processSendMail(req, resp);
-				resp.sendRedirect(servletPath + "/list");
-			} else {
-				resp.sendRedirect(servletPath + "/list");
-			}
-		} catch (Throwable e) {
-			LOG.log(Level.WARNING, "exception in doPost:", e);
-			req.setAttribute("exception", e);
-			resp.sendRedirect("/error.jsp");
-		}
+			throws Exception {
+		List<GuestbookEntry> entries = service.listEntry();
+		LOG.log(Level.INFO, "entries:" + entries);
+		req.setAttribute("list", entries);
+		RequestDispatcher dispatcher = getServletContext()
+				.getRequestDispatcher("/list.jsp");
+		dispatcher.forward(req, resp);
 	}
 
 	private void processDelete(HttpServletRequest req, HttpServletResponse resp)
