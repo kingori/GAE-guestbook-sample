@@ -11,10 +11,22 @@ response.setHeader ("Cache-Control", "no-cache");
 <head>
 <script type="text/javascript">
 function sendEmail( email) {
-var mailContent = prompt("이메일 내용을 입력하세요", "방문해 주셔서 고맙습니다.");
-document.forms['send_mail'].email.value= email;
-document.forms['send_mail'].content.value = mailContent;
-document.forms['send_mail'].submit();
+	mailContent = prompt("이메일 내용을 입력하세요", "방문해 주셔서 고맙습니다.");
+	if( mailContent != null ) {
+		document.forms['send_mail'].email.value= email;
+		document.forms['send_mail'].content.value = mailContent;
+		document.forms['send_mail'].submit();
+	}
+	return false;
+}
+
+function deleteItem( id ) {
+	deleteConfirm = confirm('정말로 삭제하시겠습니까?');
+	if( deleteConfirm ) {
+	 	document.location.href='delete?id='+id;
+	} else {
+		return false;
+	}
 }
 </script>
 </head>
@@ -35,9 +47,9 @@ document.forms['send_mail'].submit();
  for( GuestbookEntry entry: list ) { %>
  <div name="entry">
  <ul><li>Id:<%= entry.getId() %></li>
- <li>Name:<%= entry.getName() %> <a href="delete?id=<%= entry.getId() %>">delete</a></li>
+ <li>Name:<%= entry.getName() %> <a href="#" onclick="return deleteItem( <%= entry.getId() %> );">delete</a></li>
  <li>Comment:<%= entry.getComment() %></li>
- <li>Email:<a href="#" onclick="sendEmail( '<%= entry.getEmail() %>');"><%= entry.getEmail() %></a></li>
+ <li>Email:<a href="#" onclick="return sendEmail( '<%= entry.getEmail() %>');"><%= entry.getEmail() %></a></li>
  <li>Date:<%= entry.getDate() %></li>
  </ul>
 </div>
