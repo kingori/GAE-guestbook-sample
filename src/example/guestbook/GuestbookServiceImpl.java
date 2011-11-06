@@ -34,7 +34,7 @@ public class GuestbookServiceImpl implements GuestbookService {
 	public boolean deleteEntry(long id) throws Exception {
 		PersistenceManager pm = getPersistenceManager();
 		try {
-			GuestbookEntry entry = pm.getObjectById(GuestbookEntry.class, id); 
+			GuestbookEntry entry = pm.getObjectById(GuestbookEntry.class, id);
 			pm.deletePersistent(entry);
 			return true;
 		} catch (Exception e) {
@@ -51,8 +51,8 @@ public class GuestbookServiceImpl implements GuestbookService {
 		try {
 			Query query = pm.newQuery(GuestbookEntry.class);
 			query.setOrdering("date desc");
-			List<GuestbookEntry> list = (List<GuestbookEntry>) pm.newQuery(query).execute();
-			list.size(); //prevent lazy loading
+			List<GuestbookEntry> list = (List<GuestbookEntry>) query.execute();
+			list.size(); // prevent lazy loading
 			return list;
 		} catch (Exception e) {
 			throw e;
@@ -63,6 +63,26 @@ public class GuestbookServiceImpl implements GuestbookService {
 
 	private PersistenceManager getPersistenceManager() {
 		return PMF.getPersistenceManager();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<GuestbookEntry> searchEntry(String keyword) throws Exception {
+		PersistenceManager pm = getPersistenceManager();
+		try {
+			Query query = pm.newQuery(GuestbookEntry.class,"name.matches('"+keyword+".*')");
+			//query.setOrdering("date desc");
+			List<GuestbookEntry> list = (List<GuestbookEntry>) query
+					.execute();
+			LOG.info("list size:"+list.size());
+			list.size(); // prevent lazy loading
+			return list;
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			pm.close();
+		}
+
 	}
 
 }

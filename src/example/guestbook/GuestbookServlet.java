@@ -50,6 +50,9 @@ public class GuestbookServlet extends HttpServlet {
 			} else if (reqPath.equals("/send_mail")) {
 				processSendMail(req, resp);
 				redirectToList(servletPath, resp);
+			} else if (reqPath.equals("/search")) {
+				processSearch(req, resp);
+
 			} else if (reqPath.equals("/") || reqPath.equals("")) {
 				redirectToList(servletPath, resp);
 			}
@@ -58,6 +61,23 @@ public class GuestbookServlet extends HttpServlet {
 			req.setAttribute("exception", e);
 			resp.sendRedirect("/error.jsp");
 		}
+	}
+
+	private void processSearch(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+		String keyword = req.getParameter("keyword");
+		List<GuestbookEntry> entries;
+		if( keyword == null ||  keyword.length() < 1) {
+			entries = service.listEntry();
+		} else {
+			entries = service.searchEntry( keyword);	
+		}
+		
+		LOG.log(Level.INFO, "entries:" + entries);
+		req.setAttribute("list", entries);
+		req.setAttribute("keyword",keyword );
+		RequestDispatcher dispatcher = getServletContext()
+				.getRequestDispatcher("/list.jsp");
+		dispatcher.forward(req, resp);
 	}
 
 	private void redirectToList(String servletPath, HttpServletResponse resp)
@@ -81,6 +101,7 @@ public class GuestbookServlet extends HttpServlet {
 		List<GuestbookEntry> entries = service.listEntry();
 		LOG.log(Level.INFO, "entries:" + entries);
 		req.setAttribute("list", entries);
+		req.setAttribute("keyword","");
 		RequestDispatcher dispatcher = getServletContext()
 				.getRequestDispatcher("/list.jsp");
 		dispatcher.forward(req, resp);
