@@ -2,6 +2,7 @@ package example.guestbook;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -64,7 +65,7 @@ public class GuestbookServlet extends HttpServlet {
 	}
 
 	private void processSearch(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-		String keyword = req.getParameter("keyword");
+		String keyword = URLDecoder.decode(req.getParameter("keyword"),"UTF-8");
 		List<GuestbookEntry> entries;
 		if( keyword == null ||  keyword.length() < 1) {
 			entries = service.listEntry();
@@ -72,6 +73,7 @@ public class GuestbookServlet extends HttpServlet {
 			entries = service.searchEntry( keyword);	
 		}
 		
+		LOG.log(Level.INFO,"keyword:"+keyword);
 		LOG.log(Level.INFO, "entries:" + entries);
 		req.setAttribute("list", entries);
 		req.setAttribute("keyword",keyword );

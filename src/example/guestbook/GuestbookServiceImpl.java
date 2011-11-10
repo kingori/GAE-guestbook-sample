@@ -70,7 +70,7 @@ public class GuestbookServiceImpl implements GuestbookService {
 	public List<GuestbookEntry> searchEntry(String keyword) throws Exception {
 		PersistenceManager pm = getPersistenceManager();
 		try {
-			Query query = pm.newQuery(GuestbookEntry.class,"name.matches('"+keyword+".*')");
+			Query query = pm.newQuery(GuestbookEntry.class,"name == '"+keyword+"'");
 			//query.setOrdering("date desc");
 			List<GuestbookEntry> list = (List<GuestbookEntry>) query
 					.execute();
